@@ -10,8 +10,19 @@
 	$api = new Session($url, $token, API_KEY, SECRET);
 
 	//if the Shopify connection is valid
-	if ($api->valid()){
-	  $products = $api->product->get();
+	if ($api->valid()) {
+
+    // Create a new ScriptTag
+    if ($_GET['create']) {
+      $fields = array(
+        'src' => 'http://localhost:8000/js/hello.js',
+        'event' => 'onload',
+      );
+      $api->script_tag->create($fields);
+    }
+
+    // Get a list of all script tags for your shop
+	  $script_tags = $api->script_tag->get();
 ?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -29,17 +40,17 @@
     	<div id="container" class="clearfix">
 
     		<ul id="tabs">
-    		  <li><a href="index.php" id="current">Main</a></li>
-    		  <li><a href="script_tag.php">Script Tag</a></li>
+    		  <li><a href="index.php">Main</a></li>
+    		  <li><a href="script_tag.php" id="current">Script Tag</a></li>
     			<li><a href="logout.php">Logout</a></li>
     		</ul>
 
     		<div id="main" class="clearfix">
-          <h1>Products</h1>
+          <h1>Script Tags</h1>
 
           <?php
-            foreach($products as $product){
-              echo $product['title'].'<br />';
+            foreach($script_tags as $script_tag){
+              echo $script_tag['src'].'<br />';
             }
           ?>
     		</div>
