@@ -1172,7 +1172,53 @@
 			unset($this->array);
 		}
 	}
-	
+
+	class ScriptTag{
+		private $prefix = "/";
+		private $array = array();
+
+		public function __construct($site){
+			$this->prefix = $site . $this->prefix;
+		}
+
+		public function get($id = 0, $params = array(), $cache = false){
+			if ($id == 0){
+				if (!$cache || !isset($this->array['script-tag'])) $this->array = organizeArray(sendToAPI($this->prefix . "script_tags?" . $params), 'script-tag');
+				return $this->array['script-tag'];
+			}else{
+				if (!$cache || !isset($this->array['script-tag'][$id])){
+					$temp = sendToAPI($this->prefix . "script_tags/" . $id);
+					$this->array['script-tag'][$id] = $temp;
+				}
+				return $this->array['script-tag'][$id];
+			}
+		}
+
+		public function count($params = array()){
+		  $params = url_encode_array($params);
+		  return sendToAPI($this->prefix . "script_tags/count?" . $params);
+		}
+
+		public function create($fields){
+			$fields = array('script_tag' => $fields);
+			return sendToAPI($this->prefix . "script_tags", 'POST', $fields);
+		}
+
+		public function modify($id, $fields){
+			$fields = array('script_tag' => $fields);
+			return sendToAPI($this->prefix . "script_tags/" . $id, 'PUT', $fields);
+		}
+
+		public function remove($id){
+			return sendToAPI($this->prefix . "script_tags/". $id, 'DELETE');
+		}
+
+		public function __destruct(){
+			unset($this->prefix);
+			unset($this->array);
+		}
+	}
+
 	class Session{
 		private $api_key;
 		private $secret;
@@ -1206,7 +1252,8 @@
 		public $smart_collection;
 		public $transaction;
 		public $webhook;
-						
+		public $script_tag;
+
 		/*
 			BEGIN PUBLIC
 		*/
@@ -1250,6 +1297,7 @@
 				$this->smart_collection 			= new SmartCollection($this->site());
 				$this->transaction 					= new Transaction($this->site());
 				$this->webhook 						= new Webhook($this->site());
+				$this->script_tag 						= new ScriptTag($this->site());
 			}
 		}
 			
@@ -1297,6 +1345,7 @@
 			unset($this->smart_collection);
 			unset($this->transaction);
 			unset($this->webhook);
+			unset($this->script_tag);
 		}
 		
 		/*
