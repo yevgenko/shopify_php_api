@@ -1183,6 +1183,7 @@
 
 		public function get($id = 0, $params = array(), $cache = false){
 			if ($id == 0){
+				$params = url_encode_array($params);
 				if (!$cache || !isset($this->array['script-tag'])) $this->array = organizeArray(sendToAPI($this->prefix . "script_tags?" . $params), 'script-tag');
 				return $this->array['script-tag'];
 			}else{
